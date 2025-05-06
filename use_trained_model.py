@@ -3,10 +3,11 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 
 # Load the trained model
-model = tf.keras.models.load_model('my_image_classifier.h5')
+model = tf.keras.models.load_model("./model/classification_model.h5")
 
 # Define the target image size (must match the training image size)
 img_width, img_height = 100, 100
+
 
 def classify_image(image_path):
     """
@@ -29,17 +30,17 @@ def classify_image(image_path):
         img_array = np.expand_dims(img_array, axis=0)
 
         # Normalize the image (as done during training)
-        img_array /= 255.
+        img_array /= 255.0
 
         # Make the prediction
         prediction = model.predict(img_array)
 
         # Interpret the prediction (assuming binary classification)
         if prediction[0] > 0.5:
-            predicted_class = 'class_1'
+            predicted_class = "class_1"
             probability = prediction[0][0]
         else:
-            predicted_class = 'class_0'
+            predicted_class = "class_0"
             probability = 1 - prediction[0][0]
 
         return f"Predicted class: {predicted_class}, Probability: {probability:.4f}"
@@ -49,11 +50,10 @@ def classify_image(image_path):
     except Exception as e:
         return f"An error occurred: {e}"
 
-# Example usage:
-new_image_path = 'path/to/your/new_image.jpg'  # Replace with the actual path
-result = classify_image(new_image_path)
-print(result)
 
-new_image_path_2 = 'path/to/another/image.png' # Replace with another image path
-result_2 = classify_image(new_image_path_2)
-print(result_2)
+# Example usage:
+print(classify_image("./to_classify/fork.png"))
+print(classify_image("./to_classify/spoon.jpg"))
+print(classify_image("./to_classify/fork1.jpg"))
+print(classify_image("./to_classify/knife.jpg"))
+print(classify_image("./to_classify/trident_001.jpg"))
