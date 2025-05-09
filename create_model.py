@@ -7,8 +7,8 @@ train_data_dir = "train"
 validation_data_dir = "validation"
 img_width, img_height = 100, 100
 batch_size = 32
-epochs = 10
-kernel_size = (10, 10)
+epochs = 20
+kernel_size = (5, 5)
 
 train_datagen = ImageDataGenerator(
     rescale=1.0 / 255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True
