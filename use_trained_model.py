@@ -19,14 +19,23 @@ def classify_image(image_path):
 
         prediction = model.predict(img_array)
 
-        if prediction[0] > 0.5:
-            predicted_class = "class_1"
-            probability = prediction[0][0]
-        else:
-            predicted_class = "class_0"
-            probability = 1 - prediction[0][0]
+        prob_class_0 = prediction[0][0]  # Probability of class_0
+        prob_class_1 = prediction[0][1]  # Probability of class_1
 
-        return f"Predicted class: {predicted_class}, Probability: {probability:.4f}"
+        result = f"Class_0: {'Yes' if prob_class_0 > 0.5 else 'No'}, Probability: {prob_class_0:.4f}\n"
+        result += f"Class_1: {'Yes' if prob_class_1 > 0.5 else 'No'}, Probability: {prob_class_1:.4f}"
+
+        print(result)
+        pred = ""
+
+        if prob_class_0 == 1 and prob_class_1 == 0:
+            pred = "fruta"
+        elif prob_class_1 == 1 and prob_class_0 == 0:
+            pred = "utensilio"
+        else:
+            pred = "outros"
+
+        return pred
 
     except FileNotFoundError:
         return f"Error: Image not found at {image_path}"
@@ -34,9 +43,4 @@ def classify_image(image_path):
         return f"An error occurred: {e}"
 
 
-print(classify_image("./to_classify/bg.jpg"))
-print(classify_image("./to_classify/tom.jpg"))
-print(classify_image("./to_classify/pa.png"))
-print(classify_image("./to_classify/pedra.jpg"))
-print(classify_image("./to_classify/pedra_es.jpg"))
-print(classify_image("./to_classify/lim.jpg"))
+classify_image("./to_classify/goku.jpg")
