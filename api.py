@@ -1,19 +1,53 @@
 from flask import Flask, request, jsonify
-from use_trained_model import 
+from werkzeug.utils import secure_filename
+from use_trained_model import classify_image
+import imghdr
+
 app = Flask(__name__)
 
+# Configurações
+app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024  # 20 MB
 
-@app.route("/upload", methods=["POST"])
-def upload_file():
-    if "file" not in request.files:
-        return jsonify({"error": "No file part"}), 400
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff', 'webp'}
 
-    file = request.files["file"]
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-    category = "example_category"
+@app.errorhandler(413)
+def request_entity_too_large(error):
+    return jsonify({'error': 'Arquivo excede o limite de 20 MB'}), 413
 
-    return jsonify({"category": category})
+@app.route('/classificacao', methods=['POST'])
+def classify_upload_image():
+    if 'file' not in request.files:
+        return jsonify({'error': 'Arquivo não enviado no formulário'}), 400
+    
+    file = request.files['file']
+    
+    if file.filename == '':
+        return jsonify({'error': 'Arquivo não selecionado'}), 400
+    
+    if file and allowed_file(file.filename):
+        # Verifica se é realmente uma imagem
+        header_bytes = file.read(512)
+        file.seek(0)  # Volta ao início do arquivo após leitura para verificar tipo
+        file_type = imghdr.what(None, header_bytes)
+        if file_type not in ALLOWED_EXTENSIONS:
+            return jsonify({'error': 'O arquivo enviado não é uma imagem válida'}), 400
 
+        try:
+            classification_result, prediction, obj = classify_image(file)
+            print(classification_result, prediction, obj)
+            return jsonify({
+                'categoria': prediction,
+                'detalhes': classification_result
+            })
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+    else:
+        return jsonify({'error': 'Tipo de arquivo não permitido'}), 400
 
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=False)
+
