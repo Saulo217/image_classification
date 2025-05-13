@@ -40,8 +40,8 @@ def classify_upload_image():
             classification_result, prediction = classify_image(file)
             print(classification_result, prediction)
             return jsonify({
-                'categoria': prediction,
-                'detalhes': classification_result
+                'category': prediction,
+                'details': classification_result
             })
         except Exception as e:
             return jsonify({'error': str(e)}), 500
