@@ -40,7 +40,7 @@ def classify_upload_image():
             classification_result, prediction = classify_image(file)
             print(classification_result, prediction)
             return jsonify({
-                'categoria': prediction,
+                'category': prediction,
                 'detalhes': classification_result
             })
         except Exception as e:
@@ -49,5 +49,5 @@ def classify_upload_image():
         return jsonify({'error': 'Tipo de arquivo não permitido'}), 400
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
 
