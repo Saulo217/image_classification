@@ -7,7 +7,7 @@ train_data_dir = "train"
 validation_data_dir = "validation"
 img_width, img_height = 100, 100
 batch_size = 32
-epochs = 20
+epochs = 10
 kernel_size = (5, 5)
 
 train_datagen = ImageDataGenerator(
@@ -51,7 +51,7 @@ model.add(MaxPooling2D((2, 2)))
 
 model.add(Flatten())
 model.add(Dense(128, activation="relu"))
-model.add(Dense(2, activation="softmax"))
+model.add(Dense(validation_generator.num_classes, activation="softmax"))
 
 model.compile(
     optimizer="adam",
@@ -59,18 +59,13 @@ model.compile(
     metrics=["accuracy"],
 )
 
-
 history = model.fit(
     train_generator,
-    steps_per_epoch=train_generator.samples // batch_size,
     epochs=epochs,
     validation_data=validation_generator,
-    validation_steps=validation_generator.samples // batch_size,
 )
 
-loss, accuracy = model.evaluate(
-    validation_generator, steps=validation_generator.samples // batch_size
-)
+loss, accuracy = model.evaluate(validation_generator)
 print(f"Validation Loss: {loss:.4f}")
 print(f"Validation Accuracy: {accuracy:.4f}")
 
